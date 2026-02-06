@@ -1,0 +1,56 @@
+
+Edit the `> Replace this description...` line to a single sentence describing what **FBMS** stands for in your project.
+
+---
+
+# 3) schema.sql starter (copy & paste; adapt to your model)
+This is a **generic, safe template** — adapt table/column names to your actual design. It uses standard SQL that works in PostgreSQL/MySQL with only small syntax differences (e.g., `SERIAL` vs `AUTO_INCREMENT`).
+
+```sql
+-- schema.sql
+-- Replace table and column names with your actual FBMS schema.
+
+-- Example: Users / Customers
+CREATE TABLE users (
+  user_id SERIAL PRIMARY KEY,
+  first_name VARCHAR(100) NOT NULL,
+  last_name VARCHAR(100) NOT NULL,
+  email VARCHAR(255) UNIQUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Example: Items (for inventory / products)
+CREATE TABLE items (
+  item_id SERIAL PRIMARY KEY,
+  name VARCHAR(150) NOT NULL,
+  category VARCHAR(100),
+  price NUMERIC(10,2),
+  in_stock INTEGER DEFAULT 0
+);
+
+-- Example: Orders / Transactions
+CREATE TABLE orders (
+  order_id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(user_id),
+  order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  total_amount NUMERIC(12,2)
+);
+
+-- Example: Order items (many-to-many relationship)
+CREATE TABLE order_items (
+  order_item_id SERIAL PRIMARY KEY,
+  order_id INTEGER NOT NULL REFERENCES orders(order_id) ON DELETE CASCADE,
+  item_id INTEGER NOT NULL REFERENCES items(item_id),
+  quantity INTEGER NOT NULL DEFAULT 1,
+  price NUMERIC(10,2) NOT NULL
+);
+
+-- Example: Additional tables (adjust as needed)
+CREATE TABLE suppliers (
+  supplier_id SERIAL PRIMARY KEY,
+  name VARCHAR(200),
+  contact_email VARCHAR(255)
+);
+
+-- Indexes & sample constraints
+CREATE INDEX idx_items_category ON items(category);
